@@ -17,7 +17,7 @@ pipeline {
             steps {
                 sh 'docker build -t nevisha/nginx:latest .'
                 sh "docker tag nevisha/nginx:latest nevisha/nginx:develop-${env.BUILD_ID}" 
-                sh 'docker run -d -p 8081:80 nevisha/nginx:latest'
+                sh 'docker run -d -p 8085:80 nevisha/nginx:latest'
             } 
         }
 
@@ -36,7 +36,7 @@ pipeline {
 
         stage('testing') {
             steps {
-                sh 'curl -I 44.202.151.74:8081'
+                sh 'curl -I 44.202.151.74:8085'
             }
         }
     }
