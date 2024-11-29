@@ -13,32 +13,32 @@ pipeline {
             }
         }
 
-        stage('Build and run docker image') {
+        stage('Build image') {
             steps {
-                sh 'docker build -t nevisha/nginx:latest .'
-                sh "docker tag nevisha/nginx:latest nevisha/nginx:develop-${env.BUILD_ID}" 
-                sh 'docker run -d -p 8085:80 nevisha/nginx:latest'
-            } 
-        }
-
-        stage('Build and Push') {
-            steps {
-                echo 'Building..'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-auth', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh '''
-                        docker login -u ${USERNAME} -p ${PASSWORD}
-                        docker push nevisha/nginx:latest
-                    '''
-                    sh "docker push nevisha/nginx:develop-${env.BUILD_ID}"
-                }
+                sh 'docker build -t mywebsite .'
+                sh 'docker stop mywebsite || true && docker rm mywebsite || true'
+                sh 'docker run --name mywebsite -d -p 8081:80 mywebsite'
             }
         }
 
-        stage('testing') {
+         stage('Test') {
             steps {
-                sh 'curl -I 44.202.151.74:8085'
+                sh 'curl -I localhost:8081'
             }
+        }
+        stage('Tag and Push') {
+        steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            script {
+                def buildId = env.BUILD_ID
+                sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                sh "docker tag mywebsite nevisha/2244_ica2:latest"
+                sh "docker tag mywebsite nevisha/2244_ica2:develop-${env.BUILD_ID}"
+                sh "docker push nevisha/2244_ica2:latest"
+                sh "docker push nevisha/2244_ica2:develop-$buildId"
+            }    
         }
     }
 }
-
+}
+}
