@@ -13,9 +13,9 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    if [ $(docker ps -aq -f name=practical_buck) ]; then
-                        docker stop practical_buck || true
-                        docker rm practical_buck || true
+                    if [ $(docker ps -aq -f name=unruffled_darwin) ]; then
+                        docker stop unruffled_darwin || true
+                        docker rm unruffled_darwin || true
                     fi
                     '''
                 }
