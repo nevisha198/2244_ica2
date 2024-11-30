@@ -1,28 +1,23 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_REPO = "nevisha/2244_ica2"
+    }
     stages {
-        stage('Info') {
+        stage('Pull Docker Image') {
             steps {
-                echo "Job: ${env.JOB_NAME} is building on branch ${env.GIT_BRANCH} and build-id is ${env.BUILD_ID}"
-                sh 'sleep 5'
+                sh 'docker pull nevisha/2244_ica2:latest'
             }
         }
-        stage('Build') {
+        stage('Run Container') {
             steps {
-                echo "this is build stage"
-                sh 'sleep 5'
+                sh 'docker stop nevisha/2244_ica2:latest || true && docker rm nevisha/2244_ica2:latest || true'
+                sh 'docker run -d -p 8082:80 nevisha/2244_ica2:latest'
             }
         }
         stage('Test') {
             steps {
-                echo "this is test stage"
-                sh 'sleep 5'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo "this is deploy stage"
-                sh 'sleep 5'
+                sh 'curl -I localhost:8082'
             }
         }
     }
