@@ -9,21 +9,10 @@ pipeline {
                 sh 'docker pull nevisha/2244_ica2:latest'
             }
         }
-        stage('Stop and Remove Old Container') {
-            steps {
-                script {
-                    sh '''
-                    if [ $(docker ps -aq -f name=laughing_shamir) ]; then
-                        docker stop laughing_shamir || true
-                        docker rm laughing_shamir || true
-                    fi
-                    '''
-                }
-            }
-        }
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 8082:80 nevisha/2244_ica2:latest'
+                sh 'docker stop website || true && docker rm website || true'
+                sh 'docker run --name website -d -p 8082:80 nevisha/2244_ica2:latest'
             }
         }
         stage('Test') {
